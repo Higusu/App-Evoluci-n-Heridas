@@ -60,11 +60,9 @@ export default function App() {
   const handleSelectOne = (field: keyof WoundData, value: string | boolean) => {
     setData(prev => {
       const newState = { ...prev, [field]: value };
-      // Reset lateralidad if location doesn't support it
       if (field === 'ubicacion' && typeof value === 'string' && !value.includes('D/I')) {
         newState.lateralidad = '';
       }
-      // Reset tipoPuntos if presenciaPuntos is false
       if (field === 'presenciaPuntos' && value === false) {
         newState.tipoPuntos = '';
       }
@@ -74,11 +72,17 @@ export default function App() {
 
   const handleGenerate = async () => {
     setLoading(true);
-    const note = await generateWoundNote(data);
-    setGeneratedNote(note);
-    setLoading(false);
-    if (window.innerWidth < 1024) {
-      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    try {
+      const note = await generateWoundNote(data);
+      setGeneratedNote(note);
+    } catch (err) {
+      console.error(err);
+      alert("Error al generar la nota. Por favor, reintente.");
+    } finally {
+      setLoading(false);
+      if (window.innerWidth < 1024) {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }
     }
   };
 
@@ -96,29 +100,29 @@ export default function App() {
   }, [generatedNote]);
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="min-h-screen flex flex-col lg:flex-row bg-slate-50">
       {/* Left Column: Form */}
       <div className="flex-1 max-w-3xl mx-auto w-full p-4 lg:p-8 space-y-6 lg:overflow-y-auto">
         <header className="mb-8">
           <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 bg-blue-600 rounded-lg text-white">
+            <div className="p-2 bg-blue-600 rounded-lg text-white shadow-lg">
               <IconStethoscope />
             </div>
             <h1 className="text-2xl font-bold text-slate-800">WoundCare Pro</h1>
           </div>
-          <p className="text-slate-500">Gestión avanzada de curaciones y generación de notas clínicas.</p>
+          <p className="text-slate-500 font-medium">Gestión avanzada de curaciones y generación de notas clínicas.</p>
         </header>
 
         <FormSection title="Clasificación" icon={<IconMapPin />}>
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Tipo de Herida</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Tipo de Herida</label>
               <div className="flex flex-wrap gap-2">
                 {Object.values(TipoHerida).map(type => (
                   <button
                     key={type}
                     onClick={() => handleSelectOne('tipoHerida', type)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
                       data.tipoHerida === type ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'
                     }`}
                   >
@@ -133,18 +137,19 @@ export default function App() {
                   value={data.tipoHeridaOtro}
                   onChange={handleInputChange}
                   placeholder="Especifique tipo de herida..."
-                  className="mt-3 w-full px-4 py-2 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm"
+                  className="mt-4 w-full px-4 py-2 rounded-lg border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm shadow-sm"
                 />
               )}
             </div>
+
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-2">Ubicación</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-3">Ubicación Anatómica</label>
               <div className="flex flex-wrap gap-2">
                 {Object.values(Ubicacion).map(loc => (
                   <button
                     key={loc}
                     onClick={() => handleSelectOne('ubicacion', loc)}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-medium border transition-all ${
+                    className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${
                       data.ubicacion === loc ? 'bg-indigo-600 border-indigo-600 text-white shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-indigo-400'
                     }`}
                   >
@@ -160,25 +165,25 @@ export default function App() {
                   value={data.ubicacionOtro}
                   onChange={handleInputChange}
                   placeholder="Especifique ubicación..."
-                  className="mt-3 w-full px-4 py-2 rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm"
+                  className="mt-4 w-full px-4 py-2 rounded-lg border border-indigo-200 focus:ring-2 focus:ring-indigo-500 outline-none transition-all text-sm shadow-sm"
                 />
               )}
 
               {data.ubicacion.includes('D/I') && (
-                <div className="mt-3 p-3 bg-indigo-50 rounded-lg border border-indigo-100">
-                  <label className="block text-xs font-bold text-indigo-700 uppercase tracking-wider mb-2">Lateralidad</label>
-                  <div className="flex gap-2">
+                <div className="mt-4 p-4 bg-indigo-50 rounded-xl border border-indigo-100 shadow-inner">
+                  <label className="block text-xs font-black text-indigo-700 uppercase tracking-widest mb-3">Lateralidad Requerida</label>
+                  <div className="flex gap-3">
                     {['Derecha', 'Izquierda'].map(side => (
                       <button
                         key={side}
-                        onClick={() => handleSelectOne('lateralidad', side)}
-                        className={`flex-1 py-1.5 rounded-md text-xs font-bold transition-all border ${
+                        onClick={() => handleSelectOne('lateralidad', side as any)}
+                        className={`flex-1 py-2.5 rounded-lg text-xs font-black transition-all border-2 ${
                           data.lateralidad === side 
-                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-sm' 
+                            ? 'bg-indigo-600 border-indigo-600 text-white shadow-md scale-105' 
                             : 'bg-white border-indigo-200 text-indigo-600 hover:bg-indigo-100'
                         }`}
                       >
-                        {side === 'Derecha' ? 'Derecha (Der)' : 'Izquierda (Izq)'}
+                        {side === 'Derecha' ? 'DERECHA (Der)' : 'IZQUIERDA (Izq)'}
                       </button>
                     ))}
                   </div>
@@ -188,63 +193,70 @@ export default function App() {
           </div>
         </FormSection>
 
-        <FormSection title="Evaluación del Apósito y Herida" icon={<IconClipboard />}>
-          <div className="space-y-4">
+        <FormSection title="Evaluación Clínica" icon={<IconClipboard />}>
+          <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Estado del Apósito Anterior</label>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Estado del Apósito Anterior</label>
               <input
                 type="text"
                 name="estadoAposito"
                 value={data.estadoAposito}
                 onChange={handleInputChange}
-                placeholder="Ej: Desprendido, seco, saturado seroso..."
-                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                placeholder="Ej: Saturado con contenido seroso, desprendido..."
+                className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
               />
             </div>
 
-            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-4 shadow-inner">
               <div className="flex items-center justify-between">
-                <label className="text-sm font-semibold text-slate-700">¿Posee puntos de sutura?</label>
+                <div>
+                  <label className="text-sm font-bold text-slate-700">Sutura (Puntos)</label>
+                  <p className="text-xs text-slate-500">¿La herida presenta puntos de sutura?</p>
+                </div>
                 <button
+                  type="button"
                   onClick={() => handleSelectOne('presenciaPuntos', !data.presenciaPuntos)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none ${data.presenciaPuntos ? 'bg-blue-600' : 'bg-slate-300'}`}
+                  className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors focus:outline-none ${data.presenciaPuntos ? 'bg-blue-600' : 'bg-slate-300'}`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${data.presenciaPuntos ? 'translate-x-6' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-5 w-5 transform rounded-full bg-white transition-transform ${data.presenciaPuntos ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
               {data.presenciaPuntos && (
-                <div className="pt-2 border-t border-slate-200 flex flex-wrap gap-2">
-                  {['Seda', 'Corchetes'].map(tipo => (
-                    <button
-                      key={tipo}
-                      onClick={() => handleSelectOne('tipoPuntos', tipo)}
-                      className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all border ${
-                        data.tipoPuntos === tipo 
-                          ? 'bg-blue-600 border-blue-600 text-white shadow-sm' 
-                          : 'bg-white border-slate-200 text-slate-600 hover:bg-blue-50'
-                      }`}
-                    >
-                      {tipo}
-                    </button>
-                  ))}
+                <div className="pt-3 border-t border-slate-200 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex gap-2">
+                    {['Seda', 'Corchetes'].map(tipo => (
+                      <button
+                        key={tipo}
+                        type="button"
+                        onClick={() => handleSelectOne('tipoPuntos', tipo as any)}
+                        className={`flex-1 py-2 rounded-lg text-xs font-black transition-all border-2 ${
+                          data.tipoPuntos === tipo 
+                            ? 'bg-blue-600 border-blue-600 text-white shadow-md' 
+                            : 'bg-white border-slate-200 text-slate-600 hover:bg-blue-50'
+                        }`}
+                      >
+                        {tipo.toUpperCase()}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Tamaño Actual (cm)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Dimensiones (cm)</label>
                 <input
                   type="text"
                   name="tamano"
                   value={data.tamano}
                   onChange={handleInputChange}
-                  placeholder="Ej: 3x2 cm"
-                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  placeholder="Ej: 5 x 3 cm"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Dolor (EVA 0-10)</label>
+                <label className="block text-sm font-semibold text-slate-700 mb-2">Dolor (EVA 0-10)</label>
                 <input
                   type="number"
                   name="eva"
@@ -252,8 +264,8 @@ export default function App() {
                   max="10"
                   value={data.eva}
                   onChange={handleInputChange}
-                  placeholder="0-10"
-                  className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  placeholder="Escala visual análoga"
+                  className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
                 />
               </div>
             </div>
@@ -262,106 +274,107 @@ export default function App() {
 
         <FormSection title="Lecho de la Herida">
           <MultiSelect
-            label="Aspecto Predominante"
+            label="Aspecto Predominante (Selección Múltiple)"
             options={Object.values(Aspecto)}
             selected={data.aspecto}
             onChange={(val) => setData(prev => ({ ...prev, aspecto: val }))}
           />
-          <div className="grid grid-cols-3 gap-4 mt-2">
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">% Granulatorio</label>
-              <input type="number" name="porcentajeGranulatorio" value={data.porcentajeGranulatorio} onChange={handleInputChange} className="w-full px-3 py-1.5 rounded border border-slate-200 text-sm" />
+          <div className="grid grid-cols-3 gap-4 mt-6">
+            <div className="space-y-1">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-tighter">% Granulatorio</label>
+              <input type="number" name="porcentajeGranulatorio" value={data.porcentajeGranulatorio} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-green-500 outline-none" />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">% Esfacelo</label>
-              <input type="number" name="porcentajeEsfacelo" value={data.porcentajeEsfacelo} onChange={handleInputChange} className="w-full px-3 py-1.5 rounded border border-slate-200 text-sm" />
+            <div className="space-y-1">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-tighter">% Esfacelo</label>
+              <input type="number" name="porcentajeEsfacelo" value={data.porcentajeEsfacelo} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-yellow-500 outline-none" />
             </div>
-            <div>
-              <label className="block text-xs font-semibold text-slate-500 mb-1">% Necrótico</label>
-              <input type="number" name="porcentajeNecrotico" value={data.porcentajeNecrotico} onChange={handleInputChange} className="w-full px-3 py-1.5 rounded border border-slate-200 text-sm" />
+            <div className="space-y-1">
+              <label className="block text-[10px] font-black text-slate-500 uppercase tracking-tighter">% Necrótico</label>
+              <input type="number" name="porcentajeNecrotico" value={data.porcentajeNecrotico} onChange={handleInputChange} className="w-full px-3 py-2 rounded-lg border border-slate-200 text-sm font-bold focus:ring-2 focus:ring-red-500 outline-none" />
             </div>
           </div>
         </FormSection>
 
         <FormSection title="Exudado y Edema">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Calidad</label>
-              <select name="exudadoCalidad" value={data.exudadoCalidad} onChange={handleInputChange} className="w-full px-4 py-2 rounded-lg border border-slate-200 bg-white">
-                <option value="">Seleccione...</option>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Calidad</label>
+              <select name="exudadoCalidad" value={data.exudadoCalidad} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white font-medium shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Seleccione calidad...</option>
                 {Object.values(ExudadoCalidad).map(v => <option key={v} value={v}>{v}</option>)}
               </select>
             </div>
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Cantidad</label>
-              <select name="exudadoCantidad" value={data.exudadoCantidad} onChange={handleInputChange} className="w-full px-4 py-2 rounded-lg border border-slate-200 bg-white">
-                <option value="">Seleccione...</option>
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Cantidad</label>
+              <select name="exudadoCantidad" value={data.exudadoCantidad} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-lg border border-slate-200 bg-white font-medium shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
+                <option value="">Seleccione cantidad...</option>
                 {Object.values(ExudadoCantidad).map(v => <option key={v} value={v}>{v}</option>)}
               </select>
             </div>
           </div>
-          <div>
-            <label className="block text-sm font-medium text-slate-600 mb-1">Edema</label>
+          <div className="mt-4">
+            <label className="block text-sm font-semibold text-slate-700 mb-2">Evaluación de Edema</label>
             <input
               type="text"
               name="edema"
               value={data.edema}
               onChange={handleInputChange}
-              placeholder="Ej: No presenta, (+), leve maleolar..."
-              className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none"
+              placeholder="Ej: Fovea (+), leve, no presenta..."
+              className="w-full px-4 py-2.5 rounded-lg border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all shadow-sm"
             />
           </div>
         </FormSection>
 
         <FormSection title="Piel Circundante">
           <MultiSelect
-            label="Condición de la Piel"
+            label="Condición de la Piel Perilesional"
             options={Object.values(PielCircundante)}
             selected={data.pielCircundante}
             onChange={(val) => setData(prev => ({ ...prev, pielCircundante: val }))}
           />
         </FormSection>
 
-        <FormSection title="Manejo de Curación">
+        <FormSection title="Plan de Manejo">
           <div className="space-y-6">
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Limpieza / Lavado</label>
-              <input type="text" name="limpieza" value={data.limpieza} onChange={handleInputChange} className="w-full px-4 py-2 rounded-lg border border-slate-200" />
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Procedimiento de Limpieza</label>
+              <input type="text" name="limpieza" value={data.limpieza} onChange={handleInputChange} className="w-full px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
             
             <MultiSelect
-              label="Apósito Primario (Activo)"
+              label="Apósito Primario (Capa Activa)"
               options={Object.values(ApositoPrimario)}
               selected={data.apositoPrimario}
               onChange={(val) => setData(prev => ({ ...prev, apositoPrimario: val }))}
             />
 
             <MultiSelect
-              label="Apósito Secundario"
+              label="Apósito Secundario (Protección/Fijación)"
               options={Object.values(ApositoSecundario)}
               selected={data.apositoSecundario}
               onChange={(val) => setData(prev => ({ ...prev, apositoSecundario: val }))}
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-600 mb-1">Frecuencia / Próxima Curación</label>
-              <input type="text" name="proximaCuracion" value={data.proximaCuracion} onChange={handleInputChange} placeholder="Ej: En 72 horas, diario, 3 días..." className="w-full px-4 py-2 rounded-lg border border-slate-200" />
+              <label className="block text-sm font-semibold text-slate-700 mb-2">Programación Próxima Curación</label>
+              <input type="text" name="proximaCuracion" value={data.proximaCuracion} onChange={handleInputChange} placeholder="Ej: En 48 horas, según necesidad..." className="w-full px-4 py-2.5 rounded-lg border border-slate-200 shadow-sm focus:ring-2 focus:ring-blue-500 outline-none" />
             </div>
           </div>
         </FormSection>
 
-        <div className="flex gap-4 sticky bottom-4 bg-slate-50 py-4 border-t border-slate-200 z-10">
+        <div className="flex gap-4 sticky bottom-4 bg-slate-50/80 backdrop-blur-sm py-4 border-t border-slate-200 z-20">
           <button
             onClick={handleGenerate}
             disabled={loading}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-2xl shadow-xl transition-all transform hover:-translate-y-1 active:translate-y-0 flex items-center justify-center gap-3 disabled:opacity-50 disabled:hover:translate-y-0"
           >
-            {loading ? <span className="animate-spin border-2 border-white border-t-transparent rounded-full w-5 h-5"></span> : <IconMagic />}
-            Generar Evolución
+            {loading ? <span className="animate-spin border-4 border-white border-t-transparent rounded-full w-6 h-6"></span> : <IconMagic />}
+            GENERAR NOTA TÉCNICA
           </button>
           <button
             onClick={handleReset}
-            className="bg-white border border-slate-200 hover:bg-slate-50 text-slate-600 font-medium py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2"
+            title="Limpiar paciente"
+            className="bg-white border-2 border-slate-200 hover:border-red-200 hover:bg-red-50 text-slate-400 hover:text-red-600 font-bold py-4 px-6 rounded-2xl transition-all flex items-center justify-center gap-2"
           >
             <IconTrash />
           </button>
@@ -369,37 +382,37 @@ export default function App() {
       </div>
 
       {/* Right Column: Preview */}
-      <div className="lg:w-96 xl:w-[450px] bg-white border-l border-slate-200 flex flex-col h-[500px] lg:h-screen lg:sticky lg:top-0">
-        <div className="p-4 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
-          <h2 className="font-bold text-slate-700 flex items-center gap-2">
+      <div className="lg:w-[450px] bg-white border-l border-slate-200 flex flex-col h-[500px] lg:h-screen lg:sticky lg:top-0 shadow-2xl z-30">
+        <div className="p-5 border-b border-slate-200 bg-slate-50 flex items-center justify-between">
+          <h2 className="font-black text-slate-700 flex items-center gap-2 uppercase tracking-tighter">
             <IconClipboard />
             Nota de Evolución
           </h2>
           {generatedNote && (
             <button
               onClick={handleCopy}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
-                copying ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
+              className={`px-4 py-2 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${
+                copying ? 'bg-green-600 text-white shadow-md' : 'bg-blue-100 text-blue-700 hover:bg-blue-200'
               }`}
             >
-              {copying ? '¡Copiado!' : 'Copiar'}
+              {copying ? 'COPIADO ✓' : 'COPIAR'}
             </button>
           )}
         </div>
-        <div className="flex-1 p-6 overflow-y-auto bg-slate-50/50">
+        <div className="flex-1 p-6 overflow-y-auto bg-slate-100/30">
           {generatedNote ? (
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-              <pre className="whitespace-pre-wrap font-sans text-slate-800 leading-relaxed text-sm lg:text-base select-text">
+            <div className="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 animate-in zoom-in-95 duration-300">
+              <pre className="whitespace-pre-wrap font-mono text-slate-800 leading-relaxed text-sm lg:text-[15px] select-all">
                 {generatedNote}
               </pre>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-8">
-              <div className="p-4 bg-slate-100 rounded-full mb-4">
+            <div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-12">
+              <div className="p-6 bg-white rounded-full mb-6 shadow-sm">
                 <IconMagic />
               </div>
-              <p className="text-sm font-medium">Complete la evaluación clínica</p>
-              <p className="text-xs mt-2">La IA generará una nota técnica precisa y formateada lista para copiar a la ficha clínica.</p>
+              <p className="text-sm font-black text-slate-500 uppercase mb-2">Vista previa vacía</p>
+              <p className="text-xs leading-relaxed">Complete el formulario de la izquierda y presione el botón <span className="font-bold text-blue-600">Generar</span> para crear la nota clínica bajo estándares internacionales.</p>
             </div>
           )}
         </div>
