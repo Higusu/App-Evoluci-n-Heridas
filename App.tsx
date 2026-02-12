@@ -24,6 +24,7 @@ const IconMapPin = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" heig
 const INITIAL_STATE: WoundData = {
   tipoHerida: '',
   tipoHeridaOtro: '',
+  dehiscencia: false,
   ubicacion: '',
   ubicacionOtro: '',
   lateralidad: '',
@@ -65,6 +66,9 @@ export default function App() {
       }
       if (field === 'presenciaPuntos' && value === false) {
         newState.tipoPuntos = '';
+      }
+      if (field === 'tipoHerida' && value !== TipoHerida.HeridaQuirurgica) {
+        newState.dehiscencia = false;
       }
       return newState;
     });
@@ -130,6 +134,31 @@ export default function App() {
                   </button>
                 ))}
               </div>
+              
+              {data.tipoHerida === TipoHerida.HeridaQuirurgica && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between shadow-inner">
+                  <div>
+                    <label className="text-sm font-bold text-blue-700">Dehiscencia</label>
+                    <p className="text-xs text-blue-600">¿La herida presenta apertura espontánea?</p>
+                  </div>
+                  <div className="flex gap-2">
+                    {[true, false].map((val) => (
+                      <button
+                        key={String(val)}
+                        onClick={() => handleSelectOne('dehiscencia', val)}
+                        className={`px-4 py-1.5 rounded-lg text-xs font-black transition-all border ${
+                          data.dehiscencia === val 
+                            ? 'bg-blue-600 border-blue-600 text-white shadow-md' 
+                            : 'bg-white border-blue-200 text-blue-600 hover:bg-blue-100'
+                        }`}
+                      >
+                        {val ? 'SÍ' : 'NO'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {data.tipoHerida === TipoHerida.Otro && (
                 <input
                   type="text"

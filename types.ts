@@ -2,6 +2,7 @@
 export interface WoundData {
   tipoHerida: string;
   tipoHeridaOtro: string;
+  dehiscencia: boolean;
   ubicacion: string;
   ubicacionOtro: string;
   lateralidad: 'Derecha' | 'Izquierda' | '';
@@ -32,7 +33,7 @@ export enum TipoHerida {
   UlceraVenosa = 'Úlcera Venosa',
   UlceraArterial = 'Úlcera Arterial',
   PieDiabetico = 'Pie Diabético',
-  HeridaQuirurgica = 'Herida Quirúrgica / Dehiscencia',
+  HeridaQuirurgica = 'Herida Quirúrgica',
   Dermatitis = 'Dermatitis asociada a incontinencia',
   Otro = 'Otro'
 }

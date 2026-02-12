@@ -22,6 +22,7 @@ Características de la herida:
 - Presencia de edema: [Dato]
 - Dolor (valoración EVA): [Dato]/10
 - Características piel circundante: [Dato]
+[Si hay dehiscencia en herida quirúrgica, agregar: - Presencia de dehiscencia: Sí]
 [Si hay puntos, agregar una línea: - Presencia de puntos: (Seda o Corchetes)]
 
 Manejo:
@@ -36,6 +37,7 @@ REGLAS DE ORO:
 - Si un campo no tiene información, pon "No evaluado".
 - Mantén el formato estricto solicitado. No agregues introducciones ni despedidas.
 - Si NO hay puntos de sutura indicados, NO los menciones en la evolución.
+- Si NO es una herida quirúrgica con dehiscencia, NO menciones dehiscencia.
 - Usa terminología técnica basada estrictamente en el input.
 `;
 
@@ -53,6 +55,7 @@ export const generateWoundNote = async (data: WoundData): Promise<string> => {
   const prompt = `
     DATOS PARA LA NOTA:
     Tipo de Herida: ${tipoFinal || "No evaluado"}
+    ${data.tipoHerida === TipoHerida.HeridaQuirurgica ? `Presenta Dehiscencia: ${data.dehiscencia ? 'SÍ' : 'NO'}` : ''}
     Ubicación: ${ubicacionFinal || "No evaluado"}
     Presencia de puntos: ${data.presenciaPuntos ? `SÍ (${data.tipoPuntos})` : "NO"}
     Estado del apósito anterior: ${data.estadoAposito || "No evaluado"}
