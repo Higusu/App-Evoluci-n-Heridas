@@ -13,14 +13,27 @@ Próxima curación: [Dato]
 
 const SYSTEM_INSTRUCTION_DEVICE = `
 Actúa como un Enfermero Especialista en Cuidados Críticos. Tu tarea es generar una nota de evolución técnica para la "Curación y Mantención de Dispositivos Invasivos".
-REGLAS: CERO CREATIVIDAD, FORMATO LIMPIO (viñetas), TERMINOLOGÍA TÉCNICA (indemne, eritematoso, etc.).
+
+REGLAS CRÍTICAS:
+1. CERO CREATIVIDAD: Solo usa los datos entregados.
+2. FORMATO LIMPIO: Usa guiones simples (-) para cada dispositivo.
+3. SIN MARKDOWN: NO utilices asteriscos (*), ni negritas (**), ni ningún otro símbolo de formato markdown. La salida debe ser texto plano limpio.
+4. TERMINOLOGÍA: Usa términos como "indemne", "eritematoso", "seroso", "purulento", "hemático", "fijación mecánica".
+
 ESTRUCTURA POR DISPOSITIVO:
-- CVC/Línea Arterial: Ubicación, Signos infección (SÍ/NO), Contenido, Fijación (puntos), Apósito.
-- TQT: Signos infección estoma, Contenido, Granulomas (ubicación reloj), estado cánula/fijación.
-- VVP: Ubicación, signos flebitis/extravasación, permeabilidad.
+
+- Si es CVC o Línea Arterial:
+  Mencionar: Ubicación, Signos de infección (SÍ/NO), Salida de contenido (Características), Estado de la fijación (puntos de sutura) y tipo de apósito.
+
+- Si es Traqueotomía (TQT):
+  Mencionar: Signos de infección en estoma, Salida de contenido, Presencia de granulomas (ubicación específica), estado de la cánula y fijación.
+
+- Si es Curación Simple (VVP):
+  Mencionar: Ubicación, signos de flebitis o extravasación, permeabilidad.
+
 FORMATO DE SALIDA:
 "PROCEDIMIENTO: Mantención y Curación de Dispositivos Invasivos.
-[Lista de dispositivos]
+[Lista de dispositivos con sus hallazgos técnicos usando guiones]
 Próxima curación: [Fecha/Turno]"
 `;
 
@@ -66,7 +79,7 @@ export const generateDeviceNote = async (devices: DeviceInfo[], nextDate: string
     DISPOSITIVOS A EVALUAR:
     ${devices.map(d => `
       - TIPO: ${d.tipo}
-      - UBICACIÓN: ${d.ubicacion}
+      - UBICACIÓN: ${d.tipo === 'TQT' ? 'Pericanular' : d.ubicacion}
       - SIGNOS INFECCIÓN: ${d.signosInfeccion}
       - CONTENIDO/DÉBITO: ${d.contenido}
       - FIJACIÓN: ${d.fijacion}
@@ -74,7 +87,7 @@ export const generateDeviceNote = async (devices: DeviceInfo[], nextDate: string
       ${d.tipo === 'TQT' ? `- ESTOMA: ${d.estoma}, GRANULOMA: ${d.granuloma} ${d.granulomaHora ? `(Hora ${d.granulomaHora})` : ''}` : ''}
       ${d.tipo === 'VVP' ? `- FLEBITIS: ${d.flebitis}, PERMEABILIDAD: ${d.permeabilidad ? 'SÍ' : 'NO'}` : ''}
     `).join('\n')}
-    PRÓXIMA CURACIÓN: ${nextDate || "Según protocolo"}
+    PRÓXIMA CURACIÓN: ${nextDate || "Según protocolo institucional (7 días o SOS)"}
   `;
 
   try {
