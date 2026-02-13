@@ -18,7 +18,8 @@ REGLAS CRÍTICAS:
 1. CERO CREATIVIDAD: Solo usa los datos entregados.
 2. FORMATO LIMPIO: Usa guiones simples (-) para cada dispositivo.
 3. SIN MARKDOWN: NO utilices asteriscos (*), ni negritas (**), ni ningún otro símbolo de formato markdown. La salida debe ser texto plano limpio.
-4. TERMINOLOGÍA: Usa términos como "indemne", "eritematoso", "seroso", "purulento", "hemático", "fijación mecánica".
+4. FILTRADO DINÁMICO: Si un campo viene vacío o no es proporcionado, NO lo menciones en la nota final.
+5. TERMINOLOGÍA: Usa términos técnicos de enfermería (indemne, permeable, sin signos de flebitis, etc.).
 
 ESTRUCTURA POR DISPOSITIVO:
 
@@ -30,6 +31,9 @@ ESTRUCTURA POR DISPOSITIVO:
 
 - Si es Curación Simple (VVP):
   Mencionar: Ubicación, signos de flebitis o extravasación, permeabilidad.
+
+- Si es un dispositivo personalizado (Otro):
+  Mencionar el nombre del dispositivo proporcionado y listar solo los hallazgos que tengan información (Ubicación, Infección, Fijación, Contenido, Apósito). OMITIR campos vacíos.
 
 FORMATO DE SALIDA:
 "PROCEDIMIENTO: Mantención y Curación de Dispositivos Invasivos.
@@ -75,18 +79,23 @@ export const generateWoundNote = async (data: WoundData): Promise<string> => {
 
 export const generateDeviceNote = async (devices: DeviceInfo[], nextDate: string): Promise<string> => {
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
+  
+  // Filtrar dispositivos para enviar solo lo que tiene contenido
   const prompt = `
     DISPOSITIVOS A EVALUAR:
-    ${devices.map(d => `
-      - TIPO: ${d.tipo}
-      - UBICACIÓN: ${d.tipo === 'TQT' ? 'Pericanular' : d.ubicacion}
+    ${devices.map(d => {
+      const isOtro = d.tipo === 'Otro';
+      return `
+      - TIPO: ${isOtro ? (d.tipoOtro || 'Dispositivo Genérico') : d.tipo}
+      - UBICACIÓN: ${d.ubicacion || (d.tipo === 'TQT' ? 'Pericanular' : '')}
       - SIGNOS INFECCIÓN: ${d.signosInfeccion}
       - CONTENIDO/DÉBITO: ${d.contenido}
       - FIJACIÓN: ${d.fijacion}
       - APÓSITO: ${d.aposito}
       ${d.tipo === 'TQT' ? `- ESTOMA: ${d.estoma}, GRANULOMA: ${d.granuloma} ${d.granulomaHora ? `(Hora ${d.granulomaHora})` : ''}` : ''}
       ${d.tipo === 'VVP' ? `- FLEBITIS: ${d.flebitis}, PERMEABILIDAD: ${d.permeabilidad ? 'SÍ' : 'NO'}` : ''}
-    `).join('\n')}
+      `.split('\n').filter(line => line.trim() !== '' && !line.includes(':  ') && !line.endsWith(': ')).join('\n');
+    }).join('\n')}
     PRÓXIMA CURACIÓN: ${nextDate || "Según protocolo institucional (7 días o SOS)"}
   `;
 

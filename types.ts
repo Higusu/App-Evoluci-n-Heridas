@@ -26,11 +26,12 @@ export interface WoundData {
   proximaCuracion: string;
 }
 
-export type DeviceType = 'CVC' | 'Línea Arterial' | 'TQT' | 'VVP';
+export type DeviceType = 'CVC' | 'Línea Arterial' | 'TQT' | 'VVP' | 'Otro';
 
 export interface DeviceInfo {
   id: string;
   tipo: DeviceType;
+  tipoOtro?: string; // Nombre personalizado para 'Otro'
   ubicacion: string;
   signosInfeccion: string;
   contenido: string;

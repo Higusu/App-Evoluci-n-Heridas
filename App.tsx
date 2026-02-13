@@ -130,6 +130,53 @@ export default function App() {
                       <button key={t} onClick={() => handleWoundSelect('tipoHerida', t)} className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${woundData.tipoHerida === t ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'}`}>{t}</button>
                     ))}
                   </div>
+                  {woundData.tipoHerida === TipoHerida.Otro && (
+                    <input 
+                      type="text" 
+                      name="tipoHeridaOtro" 
+                      value={woundData.tipoHeridaOtro} 
+                      onChange={handleWoundChange} 
+                      placeholder="Especifique tipo de herida..." 
+                      className="w-full px-4 py-2.5 rounded-xl border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-in fade-in" 
+                    />
+                  )}
+
+                  {/* Sección de Puntos de Sutura */}
+                  <div className="mt-2 p-4 bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
+                    <div className="flex flex-col">
+                      <span className="text-xs font-black text-slate-700 uppercase">¿Presenta Puntos de Sutura?</span>
+                      <span className="text-[10px] text-slate-500 font-medium">Cierres mecánicos o manuales</span>
+                    </div>
+                    <div className="flex gap-2">
+                      {[true, false].map(v => (
+                        <button 
+                          key={String(v)} 
+                          onClick={() => handleWoundSelect('presenciaPuntos', v)} 
+                          className={`px-4 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.presenciaPuntos === v ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-100'}`}
+                        >
+                          {v ? 'SÍ' : 'NO'}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {woundData.presenciaPuntos && (
+                    <div className="p-3 bg-blue-50 rounded-xl border border-blue-100 flex items-center justify-between animate-in slide-in-from-top-2">
+                      <span className="text-xs font-black text-blue-700 uppercase">Tipo de Puntos</span>
+                      <div className="flex gap-2">
+                        {['Seda', 'Corchetes'].map(tp => (
+                          <button 
+                            key={tp} 
+                            onClick={() => handleWoundSelect('tipoPuntos', tp)} 
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.tipoPuntos === tp ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-blue-500 border-blue-200 hover:bg-blue-100'}`}
+                          >
+                            {tp.toUpperCase()}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {woundData.tipoHerida === TipoHerida.HeridaQuirurgica && (
                     <div className="mt-2 p-4 bg-blue-50 rounded-xl border border-blue-100 flex justify-between items-center shadow-inner">
                       <div className="flex flex-col">
@@ -138,6 +185,45 @@ export default function App() {
                       </div>
                       <div className="flex gap-2">
                         {[true, false].map(v => <button key={String(v)} onClick={() => handleWoundSelect('dehiscencia', v)} className={`px-4 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.dehiscencia === v ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-100'}`}>{v ? 'SÍ' : 'NO'}</button>)}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </FormSection>
+
+              <FormSection title="Localización Anatómica">
+                <div className="space-y-4">
+                  <label className="block text-xs font-black uppercase text-slate-500 tracking-wider">Ubicación</label>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.values(Ubicacion).map(u => (
+                      <button key={u} onClick={() => handleWoundSelect('ubicacion', u)} className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${woundData.ubicacion === u ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'}`}>{u}</button>
+                    ))}
+                  </div>
+                  
+                  {woundData.ubicacion === Ubicacion.Otro && (
+                    <input 
+                      type="text" 
+                      name="ubicacionOtro" 
+                      value={woundData.ubicacionOtro} 
+                      onChange={handleWoundChange} 
+                      placeholder="Especifique ubicación..." 
+                      className="w-full px-4 py-2.5 rounded-xl border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-in fade-in" 
+                    />
+                  )}
+
+                  {woundData.ubicacion.includes('D/I') && (
+                    <div className="mt-2 p-3 bg-slate-100 rounded-xl flex items-center justify-between border border-slate-200">
+                      <span className="text-xs font-black text-slate-600 uppercase">Lateralidad</span>
+                      <div className="flex gap-2">
+                        {['Derecha', 'Izquierda'].map(l => (
+                          <button 
+                            key={l} 
+                            onClick={() => handleWoundSelect('lateralidad', l)} 
+                            className={`px-4 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.lateralidad === l ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}
+                          >
+                            {l.toUpperCase()}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -155,7 +241,36 @@ export default function App() {
                     <input type="number" name="eva" value={woundData.eva} onChange={handleWoundChange} placeholder="0 al 10" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" />
                   </div>
                 </div>
+                
                 <MultiSelect label="Aspecto" options={Object.values(Aspecto)} selected={woundData.aspecto} onChange={(v) => handleWoundSelect('aspecto', v)} />
+                
+                <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mt-2">
+                  <label className="block text-[10px] font-black uppercase text-slate-500 tracking-wider">Distribución del Tejido (%)</label>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Granulatorio</label>
+                      <div className="relative">
+                        <input type="number" name="porcentajeGranulatorio" value={woundData.porcentajeGranulatorio} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Esfacelado</label>
+                      <div className="relative">
+                        <input type="number" name="porcentajeEsfacelo" value={woundData.porcentajeEsfacelo} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span>
+                      </div>
+                    </div>
+                    <div>
+                      <label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Necrótico</label>
+                      <div className="relative">
+                        <input type="number" name="porcentajeNecrotico" value={woundData.porcentajeNecrotico} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" />
+                        <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Cantidad Exudado</label>
@@ -217,116 +332,129 @@ export default function App() {
                     
                     <h3 className="text-lg font-black text-blue-900 mb-6 flex items-center gap-3">
                       <span className="bg-blue-600 text-white w-8 h-8 rounded-lg flex items-center justify-center text-sm shadow-md">{index + 1}</span>
-                      {device.tipo.toUpperCase()}
+                      {device.tipo === 'Otro' ? (device.tipoOtro || 'DISPOSITIVO PERSONALIZADO').toUpperCase() : device.tipo.toUpperCase()}
                     </h3>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Tipo Selector */}
-                      <div className="space-y-2">
+                      <div className="space-y-2 md:col-span-2">
                         <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Categoría</label>
                         <div className="flex flex-wrap gap-1">
-                          {['CVC', 'Línea Arterial', 'TQT', 'VVP'].map(t => (
+                          {['CVC', 'Línea Arterial', 'TQT', 'VVP', 'Otro'].map(t => (
                             <button key={t} onClick={() => updateDevice(device.id, 'tipo', t as any)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${device.tipo === t ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white border-slate-200 text-slate-500 hover:border-blue-200'}`}>{t}</button>
                           ))}
                         </div>
                       </div>
 
-                      {/* Ubicación (SOLO SI NO ES TQT) */}
-                      {device.tipo !== 'TQT' && (
-                        <div className="space-y-2">
-                          <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ubicación Anatómica</label>
-                          <input 
-                            type="text" 
-                            value={device.ubicacion} 
-                            onChange={(e) => updateDevice(device.id, 'ubicacion', e.target.value)}
-                            placeholder="Ej: Yugular Interno Der..."
-                            className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                          />
-                        </div>
-                      )}
-
-                      {/* TQT Specific fields */}
-                      {device.tipo === 'TQT' && (
+                      {/* --- LÓGICA DINÁMICA DE CAMPOS --- */}
+                      
+                      {device.tipo === 'Otro' ? (
+                        /* MODO TEXTO LIBRE (OTRO) */
                         <>
                           <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado Estoma</label>
-                            <div className="flex gap-1">
-                              {['Sano', 'Eritematoso', 'Macerado'].map(s => <button key={s} onClick={() => updateDevice(device.id, 'estoma', s)} className={`flex-1 py-2 rounded-lg text-[10px] font-black border-2 transition-all ${device.estoma === s ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-600 border-slate-200'}`}>{s}</button>)}
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Nombre del Dispositivo</label>
+                            <input type="text" value={device.tipoOtro || ''} onChange={(e) => updateDevice(device.id, 'tipoOtro', e.target.value)} placeholder="Ej: Drenaje Jackson-Pratt" className="w-full px-3 py-2.5 rounded-xl border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ubicación Anatómica</label>
+                            <input type="text" value={device.ubicacion} onChange={(e) => updateDevice(device.id, 'ubicacion', e.target.value)} placeholder="Ej: Flanco derecho" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección / Estado Local</label>
+                            <input type="text" value={device.signosInfeccion} onChange={(e) => updateDevice(device.id, 'signosInfeccion', e.target.value)} placeholder="Ej: Sin signos inflamatorios" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación / Estabilidad</label>
+                            <input type="text" value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} placeholder="Ej: Suturado a piel" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Contenido / Débito</label>
+                            <input type="text" value={device.contenido} onChange={(e) => updateDevice(device.id, 'contenido', e.target.value)} placeholder="Ej: Escaso serohemático" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo de Apósito</label>
+                            <input type="text" value={device.aposito} onChange={(e) => updateDevice(device.id, 'aposito', e.target.value)} placeholder="Ej: Gasa y tela" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                          </div>
+                        </>
+                      ) : (
+                        /* MODO PREDEFINIDO */
+                        <>
+                          {device.tipo !== 'TQT' && (
+                            <div className="space-y-2">
+                              <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Ubicación Anatómica</label>
+                              <input type="text" value={device.ubicacion} onChange={(e) => updateDevice(device.id, 'ubicacion', e.target.value)} placeholder="Ej: Yugular Interno Der..." className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none" />
                             </div>
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Granuloma (Posición Reloj)</label>
-                            <div className="flex gap-2 items-center">
-                              <select value={device.granuloma} onChange={(e) => updateDevice(device.id, 'granuloma', e.target.value)} className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
-                                <option value="No presenta">No presenta</option>
-                                <option value="Presenta">Presenta</option>
-                              </select>
-                              {device.granuloma === 'Presenta' && (
-                                <select value={device.granulomaHora} onChange={(e) => updateDevice(device.id, 'granulomaHora', e.target.value)} className="w-20 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
-                                  {Array.from({length: 12}, (_, i) => i + 1).map(h => <option key={h} value={h}>{h}</option>)}
-                                </select>
-                              )}
-                            </div>
-                          </div>
-                        </>
-                      )}
-
-                      {/* VVP Specific fields */}
-                      {device.tipo === 'VVP' && (
-                        <>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Flebitis/Extravasación</label>
-                            <input type="text" value={device.flebitis} onChange={(e) => updateDevice(device.id, 'flebitis', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" placeholder="Sin signos..." />
-                          </div>
-                          <div className="space-y-2 flex flex-col">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">¿Permeable?</label>
-                            <button onClick={() => updateDevice(device.id, 'permeabilidad', !device.permeabilidad)} className={`py-2 rounded-xl font-black text-xs border-2 transition-all ${device.permeabilidad ? 'bg-green-600 border-green-600 text-white' : 'bg-red-600 border-red-600 text-white'}`}>{device.permeabilidad ? 'SÍ (Permeable)' : 'NO (Obstruida)'}</button>
-                          </div>
-                        </>
-                      )}
-
-                      {/* CVC / Arterial specific */}
-                      {(device.tipo === 'CVC' || device.tipo === 'Línea Arterial') && (
-                        <>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección</label>
-                            <select value={device.signosInfeccion} onChange={(e) => updateDevice(device.id, 'signosInfeccion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
-                              <option>Sin signos</option><option>Eritema</option><option>Calor local</option><option>Sensibilidad</option>
-                            </select>
-                          </div>
-                          <div className="space-y-2">
-                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación Mecánica</label>
-                            <select value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
-                              <option>Indemne con puntos</option><option>Punto suelto</option><option>Fijación reforzada</option>
-                            </select>
-                          </div>
-                        </>
-                      )}
-
-                      {/* Common fields (Débito y Apósito) */}
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Contenido / Débito</label>
-                        <select value={device.contenido} onChange={(e) => updateDevice(device.id, 'contenido', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
-                          <option>Seco</option><option>Seroso</option><option>Escaso Seroso</option><option>Hemático</option><option>Purulento</option>
-                        </select>
-                      </div>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo Apósito</label>
-                        <select value={device.aposito} onChange={(e) => updateDevice(device.id, 'aposito', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
-                          {device.tipo === 'TQT' ? (
+                          )}
+                          {device.tipo === 'TQT' && (
                             <>
-                              <option>Gasa</option>
-                              <option>Hipoalergénico</option>
-                            </>
-                          ) : (
-                            <>
-                              <option>Tegaderm (Transparente)</option>
-                              <option>Gasa y tela</option>
-                              <option>Hipoalergénico</option>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado Estoma</label>
+                                <div className="flex gap-1">
+                                  {['Sano', 'Eritematoso', 'Macerado'].map(s => <button key={s} onClick={() => updateDevice(device.id, 'estoma', s)} className={`flex-1 py-2 rounded-lg text-[10px] font-black border-2 transition-all ${device.estoma === s ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-600 border-slate-200'}`}>{s}</button>)}
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Granuloma (Posición Reloj)</label>
+                                <div className="flex gap-2 items-center">
+                                  <select value={device.granuloma} onChange={(e) => updateDevice(device.id, 'granuloma', e.target.value)} className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                                    <option value="No presenta">No presenta</option>
+                                    <option value="Presenta">Presenta</option>
+                                  </select>
+                                  {device.granuloma === 'Presenta' && (
+                                    <select value={device.granulomaHora} onChange={(e) => updateDevice(device.id, 'granulomaHora', e.target.value)} className="w-20 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">
+                                      {Array.from({length: 12}, (_, i) => i + 1).map(h => <option key={h} value={h}>{h}</option>)}
+                                    </select>
+                                  )}
+                                </div>
+                              </div>
                             </>
                           )}
-                        </select>
-                      </div>
+                          {device.tipo === 'VVP' && (
+                            <>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Flebitis/Extravasación</label>
+                                <input type="text" value={device.flebitis} onChange={(e) => updateDevice(device.id, 'flebitis', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" placeholder="Sin signos..." />
+                              </div>
+                              <div className="space-y-2 flex flex-col">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">¿Permeable?</label>
+                                <button onClick={() => updateDevice(device.id, 'permeabilidad', !device.permeabilidad)} className={`py-2 rounded-xl font-black text-xs border-2 transition-all ${device.permeabilidad ? 'bg-green-600 border-green-600 text-white' : 'bg-red-600 border-red-600 text-white'}`}>{device.permeabilidad ? 'SÍ (Permeable)' : 'NO (Obstruida)'}</button>
+                              </div>
+                            </>
+                          )}
+                          {(device.tipo === 'CVC' || device.tipo === 'Línea Arterial') && (
+                            <>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección</label>
+                                <select value={device.signosInfeccion} onChange={(e) => updateDevice(device.id, 'signosInfeccion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                                  <option>Sin signos</option><option>Eritema</option><option>Calor local</option><option>Sensibilidad</option>
+                                </select>
+                              </div>
+                              <div className="space-y-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación Mecánica</label>
+                                <select value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                                  <option>Indemne con puntos</option><option>Punto suelto</option><option>Fijación reforzada</option>
+                                </select>
+                              </div>
+                            </>
+                          )}
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Contenido / Débito</label>
+                            <select value={device.contenido} onChange={(e) => updateDevice(device.id, 'contenido', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                              <option>Seco</option><option>Seroso</option><option>Escaso Seroso</option><option>Hemático</option><option>Purulento</option>
+                            </select>
+                          </div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo Apósito</label>
+                            <select value={device.aposito} onChange={(e) => updateDevice(device.id, 'aposito', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                              {device.tipo === 'TQT' ? (
+                                <><option>Gasa</option><option>Hipoalergénico</option></>
+                              ) : (
+                                <><option>Tegaderm (Transparente)</option><option>Gasa y tela</option><option>Hipoalergénico</option></>
+                              )}
+                            </select>
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
                 ))
