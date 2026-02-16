@@ -13,12 +13,18 @@ const IconWound = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" heigh
 const IconDevice = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h12"/><path d="M12 2v16"/><path d="m9 15 3 3 3-3"/><path d="m15 5-3-3-3 3"/></svg>;
 
 const IconLamp = () => (
-  <svg viewBox="0 0 100 60" width="24" height="24" fill="currentColor">
-    {/* Silueta inspirada en la lámpara de Florence Nightingale proporcionada */}
-    <path d="M15 30c-5-5-10-10-10-15s5-10 10-10 10 5 10 10c0 2-1 4-2 6 5 0 10 2 15 5 2-4 5-7 10-7s5 2 5 2c5 8 15 12 25 12s5 3 5 3-5 5-15 10c-15 8-35 8-50 0-5-3-10-10-10-15l3-1z" />
-    <path d="M40 50c0 5 15 10 30 10s30-5 30-10c-5-5-55-5-60 0z" />
-    <path d="M85 28c0-5 2-10 2-15s-2-10-2-10 2 5 2 10-2 15-2 15z" />
-    <circle cx="15" cy="15" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
+  <svg viewBox="0 0 100 80" width="24" height="24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    {/* Base Pedestal */}
+    <path d="M35 70c0-8 10-10 15-10s15 2 15 10c0 5-10 5-15 5s-15 0-15-5z" />
+    {/* Cuerpo de la Lámpara */}
+    <path d="M25 40c0 15 15 25 25 25s25-10 25-25c5 0 15 2 15 7s-10 7-10 7H20s-10-2-10-7 10-7 15-7z" />
+    {/* Tapa con Pomo */}
+    <path d="M38 40c0-8 12-12 12-12s12 4 12 12H38z" />
+    <circle cx="50" cy="25" r="4" />
+    {/* Asa Curvada (Estilo Florence) */}
+    <path d="M25 42c-8 0-15-8-15-15s7-15 15-15 12 5 12 10c0 3-2 6-5 6s-5-2-5-5 2-4 4-4" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" />
+    {/* Llama en la boquilla */}
+    <path d="M80 35c0-10 4-18 4-18s4 8 4 18-4 7-4 7-4-2-4-7z" />
   </svg>
 );
 
