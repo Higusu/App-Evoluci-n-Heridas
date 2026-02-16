@@ -10,7 +10,17 @@ import { MultiSelect } from './components/MultiSelect';
 
 const IconWound = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>;
 const IconDevice = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h12"/><path d="M12 2v16"/><path d="m9 15 3 3 3-3"/><path d="m15 5-3-3-3 3"/></svg>;
-const IconMagic = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.21 1.21 0 0 0 1.72 0L21.64 5.36a1.21 1.21 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/></svg>;
+const IconLamp = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M2 18c0-3 3-5 7-5s7 2 7 5" />
+    <path d="M16 13c2 0 3 1 3 3s-1 3-3 3" />
+    <path d="M2 18h14" />
+    <path d="M4 13c0-2 1-3 2-3s2 1 2 3" />
+    <path d="M10 5l-1 2" />
+    <path d="M12 4v3" />
+    <path d="M14 5l1 2" />
+  </svg>
+);
 const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>;
 const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>;
 const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
@@ -211,8 +221,8 @@ export default function App() {
     <div className="min-h-screen flex flex-col lg:flex-row bg-slate-100">
       <div className="lg:w-64 bg-slate-900 flex flex-row lg:flex-col py-4 lg:py-8 px-4 gap-4 z-50 overflow-x-auto lg:overflow-x-visible">
         <div className="hidden lg:flex items-center gap-3 mb-8 px-2">
-          <div className="bg-blue-600 p-2 rounded-lg text-white"><IconMagic /></div>
-          <span className="text-white font-black tracking-tighter text-xl">WoundCare+</span>
+          <div className="bg-blue-600 p-2 rounded-lg text-white"><IconLamp /></div>
+          <span className="text-white font-black tracking-tighter text-xl">FloApp</span>
         </div>
         <button onClick={() => setActiveTab('wound')} className={`flex-1 lg:flex-none flex items-center justify-center lg:justify-start gap-3 px-4 py-4 rounded-xl transition-all font-black text-xs uppercase tracking-wider ${activeTab === 'wound' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><IconWound /><span>Curación Avanzada</span></button>
         <button onClick={() => setActiveTab('device')} className={`flex-1 lg:flex-none flex items-center justify-center lg:justify-start gap-3 px-4 py-4 rounded-xl transition-all font-black text-xs uppercase tracking-wider ${activeTab === 'device' ? 'bg-blue-600 text-white shadow-lg' : 'text-slate-400 hover:bg-slate-800 hover:text-white'}`}><IconDevice /><span>Curación de Dispositivo</span></button>
@@ -350,12 +360,12 @@ export default function App() {
               </div>
             </div>
           )}
-          <div className="pt-4 border-t border-slate-200 flex gap-4 sticky bottom-0 bg-slate-50 py-4 z-10"><button onClick={handleGenerate} disabled={loading || (activeTab === 'device' && devices.length === 0)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-2xl shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 disabled:opacity-50 disabled:transform-none">{loading ? <div className="animate-spin border-4 border-white border-t-transparent rounded-full w-5 h-5"></div> : <IconMagic />}GENERAR NOTA TÉCNICA</button></div>
+          <div className="pt-4 border-t border-slate-200 flex gap-4 sticky bottom-0 bg-slate-50 py-4 z-10"><button onClick={handleGenerate} disabled={loading || (activeTab === 'device' && devices.length === 0)} className="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-black py-4 px-6 rounded-2xl shadow-xl transition-all transform hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center gap-3 disabled:opacity-50 disabled:transform-none">{loading ? <div className="animate-spin border-4 border-white border-t-transparent rounded-full w-5 h-5"></div> : <IconLamp />}GENERAR NOTA TÉCNICA</button></div>
         </div>
         <div className="lg:w-[500px] bg-white border-l border-slate-200 flex flex-col h-[500px] lg:h-auto lg:sticky lg:top-0 shadow-2xl z-40">
-          <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between"><div className="flex flex-col"><h2 className="font-black text-slate-800 text-lg uppercase tracking-tighter">Evolución Generada</h2><span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Vista previa clínica</span></div>{generatedNote && (<button onClick={handleCopy} className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${copying ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-100 text-blue-700 hover:bg-blue-200 active:scale-95'}`}>{copying ? <IconCheck /> : null}{copying ? 'COPIADO ✓' : 'COPIAR NOTA'}</button>)}</div>
-          <div className="flex-1 p-8 overflow-y-auto bg-slate-50/30">{generatedNote ? (<div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-in zoom-in-95 duration-500 ring-1 ring-slate-200"><pre className="whitespace-pre-wrap font-mono text-slate-800 leading-relaxed text-[15px] select-all">{generatedNote}</pre></div>) : (<div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-12"><div className="p-8 bg-white rounded-full mb-6 shadow-md border border-slate-100 animate-pulse"><IconMagic /></div><h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-2">Esperando datos</h4><p className="text-xs leading-relaxed max-w-[200px]">Complete el formulario y presione generar para obtener la nota clínica técnica.</p></div>)}</div>
-          <div className="p-4 bg-slate-50 text-center"><span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Herramienta de Apoyo Profesional • Enfermería 2025</span></div>
+          <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between"><div className="flex flex-col"><h2 className="font-black text-slate-800 text-lg uppercase tracking-tighter">FloApp: Evolución</h2><span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Vista previa clínica</span></div>{generatedNote && (<button onClick={handleCopy} className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${copying ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-100 text-blue-700 hover:bg-blue-200 active:scale-95'}`}>{copying ? <IconCheck /> : null}{copying ? 'COPIADO ✓' : 'COPIAR NOTA'}</button>)}</div>
+          <div className="flex-1 p-8 overflow-y-auto bg-slate-50/30">{generatedNote ? (<div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-in zoom-in-95 duration-500 ring-1 ring-slate-200"><pre className="whitespace-pre-wrap font-mono text-slate-800 leading-relaxed text-[15px] select-all">{generatedNote}</pre></div>) : (<div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-12"><div className="p-8 bg-white rounded-full mb-6 shadow-md border border-slate-100 animate-pulse"><IconLamp /></div><h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-2">Esperando datos</h4><p className="text-xs leading-relaxed max-w-[200px]">Complete el formulario y presione generar para obtener la nota clínica técnica de FloApp.</p></div>)}</div>
+          <div className="p-4 bg-slate-50 text-center"><span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">FloApp • Apoyo Profesional • Enfermería 2025</span></div>
         </div>
       </div>
     </div>
