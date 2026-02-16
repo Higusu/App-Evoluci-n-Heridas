@@ -1,4 +1,3 @@
-
 export interface WoundData {
   tipoHerida: string;
   tipoHeridaOtro: string;
@@ -23,20 +22,34 @@ export interface WoundData {
   limpiezaMetodo: string;
   apositoPrimario: string[];
   apositoSecundario: string[];
+  informacionAdicional: string;
   proximaCuracion: string;
 }
 
-export type DeviceType = 'CVC' | 'Línea Arterial' | 'TQT' | 'VVP' | 'Otro';
+export type DeviceType = 'CVC' | 'MidLine' | 'PiccLine' | 'Línea Arterial' | 'TQT' | 'VVP' | 'Otro';
+
+export type LumenEstado = 'Infunden' | 'Infunden y Refluyen' | 'Sellados' | 'Infunde' | 'Infunde y refluye';
+
+export interface LumenInfo {
+  nombre: string;
+  estado: LumenEstado;
+}
 
 export interface DeviceInfo {
   id: string;
   tipo: DeviceType;
   tipoOtro?: string; // Nombre personalizado para 'Otro'
   ubicacion: string;
-  signosInfeccion: string;
+  signosInfeccion: string[]; // Actualizado a array para selección múltiple
   contenido: string;
   fijacion: string;
   aposito: string;
+  apositoOtro?: string; // Nuevo campo para apósito personalizado
+  // Lúmenes (CVC, MidLine, PiccLine)
+  numeroLumenes?: number;
+  lumens?: LumenInfo[];
+  // Línea Arterial specific
+  tipoLineaArterial?: 'Arteriofix' | 'Bránula';
   // TQT specific
   estoma?: string;
   granuloma?: string;
