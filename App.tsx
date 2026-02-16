@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { 
   TipoHerida, Ubicacion, Aspecto, ExudadoCalidad, ExudadoCantidad, 
@@ -10,17 +11,17 @@ import { MultiSelect } from './components/MultiSelect';
 
 const IconWound = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></svg>;
 const IconDevice = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 18h12"/><path d="M12 2v16"/><path d="m9 15 3 3 3-3"/><path d="m15 5-3-3-3 3"/></svg>;
+
 const IconLamp = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M2 18c0-3 3-5 7-5s7 2 7 5" />
-    <path d="M16 13c2 0 3 1 3 3s-1 3-3 3" />
-    <path d="M2 18h14" />
-    <path d="M4 13c0-2 1-3 2-3s2 1 2 3" />
-    <path d="M10 5l-1 2" />
-    <path d="M12 4v3" />
-    <path d="M14 5l1 2" />
+  <svg viewBox="0 0 100 60" width="24" height="24" fill="currentColor">
+    {/* Silueta inspirada en la lámpara de Florence Nightingale proporcionada */}
+    <path d="M15 30c-5-5-10-10-10-15s5-10 10-10 10 5 10 10c0 2-1 4-2 6 5 0 10 2 15 5 2-4 5-7 10-7s5 2 5 2c5 8 15 12 25 12s5 3 5 3-5 5-15 10c-15 8-35 8-50 0-5-3-10-10-10-15l3-1z" />
+    <path d="M40 50c0 5 15 10 30 10s30-5 30-10c-5-5-55-5-60 0z" />
+    <path d="M85 28c0-5 2-10 2-15s-2-10-2-10 2 5 2 10-2 15-2 15z" />
+    <circle cx="15" cy="15" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
   </svg>
 );
+
 const IconTrash = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>;
 const IconPlus = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>;
 const IconCheck = () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>;
