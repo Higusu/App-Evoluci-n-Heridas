@@ -43,6 +43,9 @@ export interface DeviceInfo {
   signosInfeccion: string[]; // Actualizado a array para selección múltiple
   contenido: string;
   fijacion: string;
+  fijacionOtro?: string; // Nuevo campo para fijación personalizada
+  solucionLimpieza: string;
+  solucionLimpiezaOtro?: string;
   aposito: string;
   apositoOtro?: string; // Nuevo campo para apósito personalizado
   // Lúmenes (CVC, MidLine, PiccLine)
@@ -60,7 +63,6 @@ export interface DeviceInfo {
 }
 
 export enum TipoHerida {
-  LPPI = 'LPP Grado I',
   LPPII = 'LPP Grado II',
   LPPIIII = 'LPP Grado III',
   LPPIV = 'LPP Grado IV',
@@ -116,7 +118,7 @@ export enum LimpiezaSolucion {
 export enum LimpiezaMetodo {
   Duchoterapia = 'Duchoterapia',
   Jeringa = 'Limpieza con jeringa y aguja',
-  Gasa = 'Gasa/tórula estéril'
+  Gasa = 'Gasa/Tórula estéril (Arrastre mecánico)'
 }
 
 export enum PielCircundante {

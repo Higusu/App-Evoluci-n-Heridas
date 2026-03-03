@@ -67,12 +67,22 @@ export default function App() {
     });
   };
 
+  const isVascular = (type: string) => ['CVC', 'MidLine', 'PiccLine', 'Línea Arterial'].includes(type);
+
+  const getDefaultCleaningSolution = (type: DeviceType): string => {
+    if (isVascular(type)) return 'Solución clorhexidina 2% base alcohólica';
+    if (type === 'TQT') return 'Solución Fisiológica';
+    if (type === 'VVP') return 'Solución alcohol 70%';
+    return 'Solución Fisiológica';
+  };
+
   const addDevice = () => {
     const defaultState: LumenEstado = 'Infunden y Refluyen';
     const newDevice: DeviceInfo = {
       id: Math.random().toString(36).substr(2, 9),
       tipo: 'CVC', ubicacion: '', signosInfeccion: ['Sin signos'],
       contenido: 'Seco', fijacion: 'Indemne con puntos', aposito: 'Tegaderm (Transparente)',
+      solucionLimpieza: getDefaultCleaningSolution('CVC'),
       estoma: 'Sano', granuloma: 'No presenta', permeabilidad: true, flebitis: 'Sin signos',
       numeroLumenes: 3, 
       lumens: [
@@ -171,6 +181,7 @@ export default function App() {
           return { 
             ...d, 
             tipo: type, 
+            solucionLimpieza: getDefaultCleaningSolution(type),
             numeroLumenes: 3, 
             lumens: [
               { nombre: 'Proximal', estado: defaultState },
@@ -182,6 +193,7 @@ export default function App() {
           return { 
             ...d, 
             tipo: type, 
+            solucionLimpieza: getDefaultCleaningSolution(type),
             numeroLumenes: 2, 
             lumens: [
               { nombre: 'Amarillo', estado: defaultState },
@@ -192,9 +204,16 @@ export default function App() {
           return { 
             ...d, 
             tipo: type, 
+            solucionLimpieza: getDefaultCleaningSolution(type),
             numeroLumenes: 1, 
             tipoLineaArterial: 'Arteriofix',
             lumens: [{ nombre: 'Único', estado: 'Infunde y refluye' }] 
+          };
+        } else if (type === 'TQT' || type === 'VVP' || type === 'Otro') {
+          return {
+            ...d,
+            tipo: type,
+            solucionLimpieza: getDefaultCleaningSolution(type)
           };
         }
       }
@@ -221,8 +240,6 @@ export default function App() {
     setCopying(true);
     setTimeout(() => setCopying(false), 2000);
   }, [generatedNote]);
-
-  const isVascular = (type: string) => ['CVC', 'MidLine', 'PiccLine', 'Línea Arterial'].includes(type);
 
   return (
     <div className="min-h-screen flex flex-col lg:flex-row bg-slate-100">
@@ -251,6 +268,16 @@ export default function App() {
                     <button key={t} onClick={() => handleWoundSelect('tipoHerida', t)} className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${woundData.tipoHerida === t ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'}`}>{t}</button>
                   ))}</div>
                   {woundData.tipoHerida === TipoHerida.Otro && (<input type="text" name="tipoHeridaOtro" value={woundData.tipoHeridaOtro} onChange={handleWoundChange} placeholder="Especifique tipo de herida..." className="w-full px-4 py-2.5 rounded-xl border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-in fade-in" />)}
+                  
+                  <div className="space-y-2">
+                    <label className="block text-xs font-black uppercase text-slate-500 tracking-wider">Estado del Apósito Anterior</label>
+                    <div className="flex flex-wrap gap-2">
+                      {['Indemne', 'Filtrado', 'Saturado', 'Desprendido', 'Sin apósito'].map(est => (
+                        <button key={est} onClick={() => handleWoundSelect('estadoAposito', est)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.estadoAposito === est ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{est.toUpperCase()}</button>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="mt-2 p-4 bg-slate-100 rounded-xl border border-slate-200 flex justify-between items-center shadow-sm">
                     <div className="flex flex-col"><span className="text-xs font-black text-slate-700 uppercase">¿Presenta Puntos de Sutura?</span><span className="text-[10px] text-slate-500 font-medium">Cierres mecánicos o manuales</span></div>
                     <div className="flex gap-2">{[true, false].map(v => (<button key={String(v)} onClick={() => handleWoundSelect('presenciaPuntos', v)} className={`px-4 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.presenciaPuntos === v ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white text-blue-600 border-blue-200 hover:bg-blue-100'}`}>{v ? 'SÍ' : 'NO'}</button>))}</div>
@@ -260,8 +287,22 @@ export default function App() {
                 </div>
               </FormSection>
               <FormSection title="Localización Anatómica"><div className="space-y-4"><label className="block text-xs font-black uppercase text-slate-500 tracking-wider">Ubicación</label><div className="flex flex-wrap gap-2">{Object.values(Ubicacion).map(u => (<button key={u} onClick={() => handleWoundSelect('ubicacion', u)} className={`px-3 py-2 rounded-lg text-xs font-bold border transition-all ${woundData.ubicacion === u ? 'bg-blue-600 text-white border-blue-600 shadow-md' : 'bg-white border-slate-200 text-slate-600 hover:border-blue-400'}`}>{u}</button>))}</div>{woundData.ubicacion === Ubicacion.Otro && (<input type="text" name="ubicacionOtro" value={woundData.ubicacionOtro} onChange={handleWoundChange} placeholder="Especifique ubicación..." className="w-full px-4 py-2.5 rounded-xl border border-blue-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm animate-in fade-in" />)}{woundData.ubicacion.includes('D/I') && (<div className="mt-2 p-3 bg-slate-100 rounded-xl flex items-center justify-between border border-slate-200"><span className="text-xs font-black text-slate-600 uppercase">Lateralidad</span><div className="flex gap-2">{['Derecha', 'Izquierda'].map(l => (<button key={l} onClick={() => handleWoundSelect('lateralidad', l)} className={`px-4 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.lateralidad === l ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{l.toUpperCase()}</button>))}</div></div>)}</div></FormSection>
-              <FormSection title="Evaluación del Lecho"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Dimensiones (cm)</label><input type="text" name="tamano" value={woundData.tamano} onChange={handleWoundChange} placeholder="Ej: 10 x 2 cm" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Dolor EVA (0-10)</label><input type="number" name="eva" value={woundData.eva} onChange={handleWoundChange} placeholder="0 al 10" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div></div><MultiSelect label="Aspecto" options={Object.values(Aspecto)} selected={woundData.aspecto} onChange={(v) => handleWoundSelect('aspecto', v)} /><div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mt-2"><label className="block text-[10px] font-black uppercase text-slate-500 tracking-wider">Distribución del Tejido (%)</label><div className="grid grid-cols-3 gap-3"><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Granulatorio</label><div className="relative"><input type="number" name="porcentajeGranulatorio" value={woundData.porcentajeGranulatorio} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Esfacelado</label><div className="relative"><input type="number" name="porcentajeEsfacelo" value={woundData.porcentajeEsfacelo} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Necrótico</label><div className="relative"><input type="number" name="porcentajeNecrotico" value={woundData.porcentajeNecrotico} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div></div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Cantidad Exudado</label><select name="exudadoCantidad" value={woundData.exudadoCantidad} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm"><option value="">Seleccione...</option>{Object.values(ExudadoCantidad).map(v => <option key={v} value={v}>{v}</option>)}</select></div>{woundData.exudadoCantidad !== ExudadoCantidad.SinExudado && (<div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Calidad Exudado</label><select name="exudadoCalidad" value={woundData.exudadoCalidad} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm"><option value="">Seleccione...</option>{Object.values(ExudadoCalidad).map(v => <option key={v} value={v}>{v}</option>)}</select></div>)}</div></FormSection>
-              <FormSection title="Plan de Manejo"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Solución Limpieza</label><select name="limpiezaSolucion" value={woundData.limpiezaSolucion} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm">{Object.values(LimpiezaSolucion).map(v => <option key={v} value={v}>{v}</option>)}</select></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Método Limpieza</label><select name="limpiezaMetodo" value={woundData.limpiezaMetodo} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm">{Object.values(LimpiezaMetodo).map(v => <option key={v} value={v}>{v}</option>)}</select></div></div><MultiSelect label="Apósito Primario (Capa Activa)" options={Object.values(ApositoPrimario)} selected={woundData.apositoPrimario} onChange={(v) => handleWoundSelect('apositoPrimario', v)} /><div className="space-y-2"><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Información Adicional</label><textarea name="informacionAdicional" value={woundData.informacionAdicional} onChange={handleWoundChange} placeholder="Observaciones adicionales, eventos adversos, etc." className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm min-h-[80px]" /></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Próxima Curación</label><input type="text" name="proximaCuracion" value={woundData.proximaCuracion} onChange={handleWoundChange} placeholder="Fecha o Turno" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div></FormSection>
+              <FormSection title="Evaluación del Lecho"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Dimensiones (cm)</label><input type="text" name="tamano" value={woundData.tamano} onChange={handleWoundChange} placeholder="Ej: 10 x 2 cm" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Dolor EVA (0-10)</label><input type="number" name="eva" value={woundData.eva} onChange={handleWoundChange} placeholder="0 al 10" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div></div><MultiSelect label="Aspecto" options={Object.values(Aspecto)} selected={woundData.aspecto} onChange={(v) => handleWoundSelect('aspecto', v)} /><div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-100 mt-2"><label className="block text-[10px] font-black uppercase text-slate-500 tracking-wider">Distribución del Tejido (%)</label><div className="grid grid-cols-3 gap-3"><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Granulatorio</label><div className="relative"><input type="number" name="porcentajeGranulatorio" value={woundData.porcentajeGranulatorio} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Esfacelado</label><div className="relative"><input type="number" name="porcentajeEsfacelo" value={woundData.porcentajeEsfacelo} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div><div><label className="block text-[9px] font-black text-slate-400 uppercase mb-1">Necrótico</label><div className="relative"><input type="number" name="porcentajeNecrotico" value={woundData.porcentajeNecrotico} onChange={handleWoundChange} className="w-full pr-6 pl-3 py-2 rounded-lg border border-slate-200 text-xs focus:ring-2 focus:ring-blue-500 outline-none" min="0" max="100" /><span className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold text-slate-400">%</span></div></div></div></div><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Cantidad Exudado</label><select name="exudadoCantidad" value={woundData.exudadoCantidad} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm"><option value="">Seleccione...</option>{Object.values(ExudadoCantidad).map(v => <option key={v} value={v}>{v}</option>)}</select></div>{woundData.exudadoCantidad !== ExudadoCantidad.SinExudado && (<div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Calidad Exudado</label><select name="exudadoCalidad" value={woundData.exudadoCalidad} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm"><option value="">Seleccione...</option>{Object.values(ExudadoCalidad).map(v => <option key={v} value={v}>{v}</option>)}</select></div>)}</div>
+                <div className="space-y-4 pt-2">
+                  <div className="space-y-2">
+                    <label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Edema</label>
+                    <div className="flex flex-wrap gap-2">
+                      {['No presenta', 'Grado +', 'Grado ++', 'Grado +++'].map(e => (
+                        <button key={e} onClick={() => handleWoundSelect('edema', e)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${woundData.edema === e ? 'bg-blue-600 border-blue-600 text-white shadow-md' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{e.toUpperCase()}</button>
+                      ))}
+                    </div>
+                  </div>
+                  <MultiSelect label="Piel Circundante" options={Object.values(PielCircundante)} selected={woundData.pielCircundante} onChange={(v) => handleWoundSelect('pielCircundante', v)} />
+                </div>
+              </FormSection>
+              <FormSection title="Plan de Manejo"><div className="grid grid-cols-1 md:grid-cols-2 gap-4"><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Solución Limpieza</label><select name="limpiezaSolucion" value={woundData.limpiezaSolucion} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm">{Object.values(LimpiezaSolucion).map(v => <option key={v} value={v}>{v}</option>)}</select></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Método Limpieza</label><select name="limpiezaMetodo" value={woundData.limpiezaMetodo} onChange={handleWoundChange} className="w-full px-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm">{Object.values(LimpiezaMetodo).map(v => <option key={v} value={v}>{v}</option>)}</select></div></div><MultiSelect label="Apósito Primario (Capa Activa)" options={Object.values(ApositoPrimario)} selected={woundData.apositoPrimario} onChange={(v) => handleWoundSelect('apositoPrimario', v)} />
+                  <MultiSelect label="Apósito Secundario (Capa Cobertura)" options={Object.values(ApositoSecundario)} selected={woundData.apositoSecundario} onChange={(v) => handleWoundSelect('apositoSecundario', v)} />
+                  <div className="space-y-2"><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Información Adicional</label><textarea name="informacionAdicional" value={woundData.informacionAdicional} onChange={handleWoundChange} placeholder="Observaciones adicionales, eventos adversos, etc." className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm min-h-[80px]" /></div><div><label className="block text-[10px] font-black uppercase text-slate-400 mb-1">Próxima Curación</label><input type="text" name="proximaCuracion" value={woundData.proximaCuracion} onChange={handleWoundChange} placeholder="Fecha o Turno" className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none text-sm" /></div></FormSection>
             </div>
           ) : (
             <div className="animate-in fade-in slide-in-from-right duration-300 space-y-4">
@@ -315,6 +356,10 @@ export default function App() {
                           <div className="space-y-2 md:col-span-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección / Estado Local (Múltiple)</label><div className="flex flex-wrap gap-1">{['Sin signos', 'Eritema', 'Calor local', 'Sensibilidad', 'Secreción'].map(opt => (<button key={opt} onClick={() => updateDevice(device.id, 'signosInfeccion', opt)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${device.signosInfeccion.includes(opt) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{opt.toUpperCase()}</button>))}</div></div>
                           <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación / Estabilidad</label><input type="text" value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} placeholder="Ej: Suturado a piel" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" /></div>
                           <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Contenido / Débito</label><input type="text" value={device.contenido} onChange={(e) => updateDevice(device.id, 'contenido', e.target.value)} placeholder="Ej: Escaso serohemático" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" /></div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Solución de Limpieza</label>
+                            <input type="text" value={device.solucionLimpieza} onChange={(e) => updateDevice(device.id, 'solucionLimpieza', e.target.value)} placeholder="Ej: Solución Fisiológica" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" />
+                          </div>
                           <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo de Apósito</label><input type="text" value={device.aposito} onChange={(e) => updateDevice(device.id, 'aposito', e.target.value)} placeholder="Ej: Gasa y tela" className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" /></div>
                         </>
                       ) : (
@@ -334,8 +379,44 @@ export default function App() {
 
                           {device.tipo === 'TQT' && (<><div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Estado Estoma</label><div className="flex gap-1">{['Sano', 'Eritematoso', 'Macerado'].map(s => <button key={s} onClick={() => updateDevice(device.id, 'estoma', s)} className={`flex-1 py-2 rounded-lg text-[10px] font-black border-2 transition-all ${device.estoma === s ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-600 border-slate-200'}`}>{s}</button>)}</div></div><div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Granuloma (Posición Reloj)</label><div className="flex gap-2 items-center"><select value={device.granuloma} onChange={(e) => updateDevice(device.id, 'granuloma', e.target.value)} className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white"><option value="No presenta">No presenta</option><option value="Presenta">Presenta</option></select>{device.granuloma === 'Presenta' && (<select value={device.granulomaHora} onChange={(e) => updateDevice(device.id, 'granulomaHora', e.target.value)} className="w-20 px-3 py-2 rounded-xl border border-slate-200 text-sm bg-white">{Array.from({length: 12}, (_, i) => i + 1).map(h => <option key={h} value={h}>{h}</option>)}</select>)}</div></div></>)}
                           {device.tipo === 'VVP' && (<><div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Flebitis/Extravasación</label><input type="text" value={device.flebitis} onChange={(e) => updateDevice(device.id, 'flebitis', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm" placeholder="Sin signos..." /></div><div className="space-y-2 flex flex-col"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">¿Permeable?</label><button onClick={() => updateDevice(device.id, 'permeabilidad', !device.permeabilidad)} className={`py-2 rounded-xl font-black text-xs border-2 transition-all ${device.permeabilidad ? 'bg-green-600 border-green-600 text-white' : 'bg-red-600 border-red-600 text-white'}`}>{device.permeabilidad ? 'SÍ (Permeable)' : 'NO (Obstruida)'}</button></div></>)}
-                          {(device.tipo === 'CVC' || device.tipo === 'MidLine' || device.tipo === 'PiccLine' || device.tipo === 'Línea Arterial') && (<><div className="space-y-2 md:col-span-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección (Múltiple)</label><div className="flex flex-wrap gap-1">{['Sin signos', 'Eritema', 'Calor local', 'Sensibilidad', 'Secreción'].map(opt => (<button key={opt} onClick={() => updateDevice(device.id, 'signosInfeccion', opt)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${device.signosInfeccion.includes(opt) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{opt.toUpperCase()}</button>))}</div></div><div className="space-y-2 md:col-span-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación Mecánica</label><select value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option value="Indemne con puntos">Indemne con puntos</option><option value="Punto suelto">Punto suelto</option><option value="Fijación sin puntos (Statlock)">Fijación sin puntos (Statlock)</option></select></div></>)}
+                          {(device.tipo === 'CVC' || device.tipo === 'MidLine' || device.tipo === 'PiccLine' || device.tipo === 'Línea Arterial') && (
+                            <>
+                              <div className="space-y-2 md:col-span-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Signos Infección (Múltiple)</label>
+                                <div className="flex flex-wrap gap-1">
+                                  {['Sin signos', 'Eritema', 'Calor local', 'Sensibilidad', 'Secreción'].map(opt => (
+                                    <button key={opt} onClick={() => updateDevice(device.id, 'signosInfeccion', opt)} className={`px-3 py-1.5 rounded-lg text-[10px] font-black border-2 transition-all ${device.signosInfeccion.includes(opt) ? 'bg-blue-600 border-blue-600 text-white' : 'bg-white text-slate-500 border-slate-200 hover:border-blue-200'}`}>{opt.toUpperCase()}</button>
+                                  ))}
+                                </div>
+                              </div>
+                              <div className="space-y-2 md:col-span-2">
+                                <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Fijación Mecánica</label>
+                                <select value={device.fijacion} onChange={(e) => updateDevice(device.id, 'fijacion', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                                  <option value="Indemne con puntos">Indemne con puntos</option>
+                                  <option value="Punto suelto">Punto suelto</option>
+                                  <option value="Fijación sin puntos (Statlock)">Fijación sin puntos (Statlock)</option>
+                                  <option value="Sin fijación">Sin fijación</option>
+                                  <option value="Otro">Otro</option>
+                                </select>
+                                {device.fijacion === 'Otro' && (
+                                  <input type="text" value={device.fijacionOtro || ''} onChange={(e) => updateDevice(device.id, 'fijacionOtro', e.target.value)} placeholder="Especifique fijación..." className="mt-2 w-full px-3 py-2 rounded-xl border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none animate-in fade-in" />
+                                )}
+                              </div>
+                            </>
+                          )}
                           <div className="space-y-2"><label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Contenido / Débito</label><select value={device.contenido} onChange={(e) => updateDevice(device.id, 'contenido', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white"><option>Seco</option><option>Seroso</option><option>Escaso Seroso</option><option>Hemático</option><option>Purulento</option></select></div>
+                          <div className="space-y-2">
+                            <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Solución de Limpieza</label>
+                            <select value={device.solucionLimpieza} onChange={(e) => updateDevice(device.id, 'solucionLimpieza', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
+                              <option value="Solución clorhexidina 2% base alcohólica">Solución clorhexidina 2% base alcohólica</option>
+                              <option value="Solución Fisiológica">Solución Fisiológica</option>
+                              <option value="Solución alcohol 70%">Solución alcohol 70%</option>
+                              <option value="Otro">Otro</option>
+                            </select>
+                            {device.solucionLimpieza === 'Otro' && (
+                              <input type="text" value={device.solucionLimpiezaOtro || ''} onChange={(e) => updateDevice(device.id, 'solucionLimpiezaOtro', e.target.value)} placeholder="Especifique solución..." className="mt-2 w-full px-3 py-2 rounded-xl border border-blue-200 text-sm focus:ring-2 focus:ring-blue-500 outline-none animate-in fade-in" />
+                            )}
+                          </div>
                           <div className="space-y-2">
                             <label className="text-[10px] font-black uppercase text-slate-400 tracking-wider">Tipo Apósito</label>
                             <select value={device.aposito} onChange={(e) => updateDevice(device.id, 'aposito', e.target.value)} className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-sm bg-white">
@@ -371,7 +452,7 @@ export default function App() {
         </div>
         <div className="lg:w-[500px] bg-white border-l border-slate-200 flex flex-col h-[500px] lg:h-auto lg:sticky lg:top-0 shadow-2xl z-40">
           <div className="p-6 border-b border-slate-200 bg-slate-50/50 flex items-center justify-between"><div className="flex flex-col"><h2 className="font-black text-slate-800 text-lg uppercase tracking-tighter">FloApp: Evolución</h2><span className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Vista previa clínica</span></div>{generatedNote && (<button onClick={handleCopy} className={`px-4 py-2.5 rounded-xl text-xs font-black transition-all flex items-center gap-2 ${copying ? 'bg-green-600 text-white shadow-lg' : 'bg-blue-100 text-blue-700 hover:bg-blue-200 active:scale-95'}`}>{copying ? <IconCheck /> : null}{copying ? 'COPIADO ✓' : 'COPIAR NOTA'}</button>)}</div>
-          <div className="flex-1 p-8 overflow-y-auto bg-slate-50/30">{generatedNote ? (<div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-in zoom-in-95 duration-500 ring-1 ring-slate-200"><pre className="whitespace-pre-wrap font-mono text-slate-800 leading-relaxed text-[15px] select-all">{generatedNote}</pre></div>) : (<div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-12"><div className="p-8 bg-white rounded-full mb-6 shadow-md border border-slate-100 animate-pulse"><IconLamp /></div><h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-2">Esperando datos</h4><p className="text-xs leading-relaxed max-w-[200px]">Complete el formulario y presione generar para obtener la nota clínica técnica de FloApp.</p></div>)}</div>
+          <div className="flex-1 p-8 overflow-y-auto bg-slate-50/30">{generatedNote ? (<div className="bg-white p-8 rounded-2xl shadow-xl border border-slate-100 animate-in zoom-in-95 duration-500 ring-1 ring-slate-200"><pre className="whitespace-pre-wrap font-['Arial'] text-slate-800 leading-relaxed text-[11pt] select-all">{generatedNote}</pre></div>) : (<div className="h-full flex flex-col items-center justify-center text-slate-400 text-center px-12"><div className="p-8 bg-white rounded-full mb-6 shadow-md border border-slate-100 animate-pulse"><IconLamp /></div><h4 className="text-sm font-black text-slate-500 uppercase tracking-widest mb-2">Esperando datos</h4><p className="text-xs leading-relaxed max-w-[200px]">Complete el formulario y presione generar para obtener la nota clínica técnica de FloApp.</p></div>)}</div>
           <div className="p-4 bg-slate-50 text-center"><span className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">FloApp • Apoyo Profesional • Enfermería 2025</span></div>
         </div>
       </div>
